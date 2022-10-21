@@ -8,13 +8,23 @@ function App() {
 
   const [ posts, setPosts ] = useState([]);
 
-  const [ alternative, setAlternative ] = useState(3);
+  const [ alternative, setAlternative ] = useState(0);
   const [loading , setLoading] = useState(true);
 
   const getPosts = async (id) => {
     const response = await fetch(`${url}${id}`);
     const post = await response.json();
     return post;
+  }
+
+  const getPostSerialized = async (ids) => {
+    await ids.reduce(async (promise, id) => {
+      await promise;
+      const post = await getPosts(id);
+      setPosts(posts => [...posts, post]);
+    }, Promise.resolve());
+    console.log("I'll wait on you");
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -28,7 +38,15 @@ function App() {
           });        
         }
         console.log('done for loop');
-      } else if (alternative === 1) {
+      } else if(alternative === 1) {
+        for( const id of ids) {
+          const data = await getPosts(id);
+          setPosts(posts => [...posts, data]);
+          setLoading(false);
+        }
+        console.log('done for of loop');
+      }      
+       else if (alternative === 2) {
         ids.forEach(id => {
           getPosts(id).then(post => {
             setPosts(posts => [...posts, post]);
@@ -36,8 +54,7 @@ function App() {
           });         
         })   
         console.log('done forEach');   
-      } else if(alternative === 2) {
-        console.log(ids);
+      } else if(alternative === 3) {
         ids.forEach(async id => {
           const post = await getPosts(id);
           setPosts(posts => [...posts, post]);
@@ -46,7 +63,7 @@ function App() {
         
         })
         console.log('done forEach async');   
-      } else if(alternative === 3) {
+      } else if(alternative === 4) {
         // await form
         (async () => {
           const promises = ids.map(id => getPosts(id));
@@ -55,13 +72,16 @@ function App() {
           setLoading(false);
           console.log('done for await Promise.all');
         })()
-      } else if(alternative === 4) {
+      } else if(alternative === 5) {
         const promises = ids.map(id => getPosts(id));
         Promise.all(promises).then(posts => { 
           setPosts(posts);
           setLoading(false);
         });
         console.log('done for then Promise.all');  
+      } else if(alternative === 6) {
+        getPostSerialized(ids);
+        console.log('done for getPostSerialized');  
       }
     }
     console.log('before fetchData');
@@ -71,11 +91,11 @@ function App() {
 
   const displayPosts = (posts) => {
     const items = posts.map((post) => {
-      return <li key={React.key}>{post.id} - {post.title}</li>;
+      return <li key={post.id}>ID {post.id} - TITLE : {post.title}</li>;
     });
     return (
       <div key={React.key} >
-        {items}
+        <ul>{items}</ul>
       </div>
     );
   }
