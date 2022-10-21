@@ -4,6 +4,16 @@ import './App.css';
 function App() {
 
   const ids = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
+  const alternativeOpc = [
+    {  alternative: 0,  tile: 'for loop'  },
+    {  alternative: 1,  tile: 'for of loop'  },
+    {  alternative: 2,  tile: 'for forEach'  },
+    {  alternative: 3,  tile: 'for await'  },
+    {  alternative: 4,  tile: 'for await Promise.all'}, 
+    {  alternative: 5,  tile: 'for then Promise.all'},
+    {  alternative: 6,  tile: 'for getPostSerialized'}
+  ];
+
   const url = `https://jsonplaceholder.typicode.com/posts/`;
 
   const [ posts, setPosts ] = useState([]);
@@ -29,6 +39,7 @@ function App() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setPosts([])
       if(alternative === 0) {
         for(let i = 0; i < ids.length; i++) {
           getPosts(ids[i]).then(post => {
@@ -91,11 +102,11 @@ function App() {
 
   const displayPosts = (posts) => {
     const items = posts.map((post) => {
-      return <li key={post.id}>ID {post.id} - TITLE : {post.title}</li>;
+      return <li style={{ margin: 0, padding: 0}} key={post.id}>ID {post.id} - TITLE : {post.title}</li>;
     });
     return (
-      <div key={React.key} >
-        <ul>{items}</ul>
+      <div key={React.key}  >
+        <ul style={{ margin: 0, padding: 0}}>{items}</ul>
       </div>
     );
   }
@@ -103,6 +114,11 @@ function App() {
   return (
     <div className="App">
       <header className="App-header"> 
+      {
+        alternativeOpc.map((opc) =>{
+          return <button key={React.key} onClick={()=> setAlternative(opc.alternative)}>{opc.tile}</button>
+        })
+      }
       {
         loading ? <h1>Loading...</h1> : displayPosts(posts)
       }            
